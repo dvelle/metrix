@@ -1,20 +1,22 @@
+import versions._
+
 name := "Metrix"
 version := "0.1"
 scalaVersion := "2.12.3"
-
-val metricsVersion = "3.2.4"
-val akkaVersion = "2.5.6"
 
 libraryDependencies ++= Seq(
 
   "org.json4s" %% "json4s-jackson" % "3.5.3",
 
-  "io.dropwizard.metrics" % "metrics-core" % metricsVersion,
-  "io.dropwizard.metrics" % "metrics-healthchecks" % metricsVersion,
-  "io.dropwizard.metrics" % "metrics-graphite" % metricsVersion,
-  "io.dropwizard.metrics" % "metrics-json" % metricsVersion,
+  "io.dropwizard.metrics" % "metrics-core" % dropwizardVersion,
+  "io.dropwizard.metrics" % "metrics-healthchecks" % dropwizardVersion,
+  "io.dropwizard.metrics" % "metrics-graphite" % dropwizardVersion,
+  "io.dropwizard.metrics" % "metrics-json" % dropwizardVersion,
 
-  "com.typesafe.akka" %% "akka-http" % "10.0.10",
+  "io.prometheus" % "simpleclient" % prometheusClientVersion,
+  "io.prometheus" % "simpleclient_httpserver" % prometheusClientVersion,
+
+  "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.typesafe.akka" %% "akka-actor" % akkaVersion
 

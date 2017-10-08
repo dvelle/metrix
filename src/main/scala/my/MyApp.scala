@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit._
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.codahale.metrics._
 import com.codahale.metrics.graphite._
@@ -12,7 +13,8 @@ import com.codahale.metrics.json.MetricsModule
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods._
-import akka.http.scaladsl.server.Directives._
+
+import scala.concurrent.ExecutionContextExecutor
 
 trait JsonMetrics {
   def jsonMetrics: JValue
@@ -20,9 +22,9 @@ trait JsonMetrics {
 
 trait MyHttp {
   self: JsonMetrics ⇒
-  implicit val system = ActorSystem("my-system")
-  implicit val materializer = ActorMaterializer()
-  implicit val executionContext = system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("my-system")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
   val route =
     path("metrics") {
@@ -53,7 +55,7 @@ trait MyGraphite extends JsonMetrics {
   def jsonMetrics: JValue = parse(writer.writeValueAsString(metrics))
 }
 
-object MyMeter extends App with MyGraphite {
+object MyMeter extends App with MyGraphite with MyHttp {
   // A meter measures the rate of events over time (e.g., “requests per second”).
   // In addition to the mean rate, meters also track 1-, 5-, and 15-minute moving averages.
   val myMeter = metrics.meter("my-meter")
@@ -109,6 +111,9 @@ object MyHistogram extends App with MyGraphite {
 
 object MyTimer extends App with MyGraphite with MyHttp {
   //A timer measures both the rate that a particular piece of code is called and the distribution of its duration.
+
+  //A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
+
   val myTimer = metrics.timer("my-timer")
 
   while (true) {
