@@ -1,5 +1,3 @@
-import mert._
-
 name := "Metrix"
 version := "0.1"
 scalaVersion := "2.12.6"
