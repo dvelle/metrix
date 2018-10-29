@@ -1,13 +1,19 @@
 package all
 
+import java.net.InetSocketAddress
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives.{complete, get, path}
 import akka.stream.ActorMaterializer
+import com.codahale.metrics.MetricRegistry
 import io.micrometer.core.instrument._
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.micrometer.core.instrument.Metrics
+import io.micrometer.graphite.{GraphiteConfig, GraphiteHierarchicalNameMapper, GraphiteMeterRegistry}
+import io.prometheus.client.CollectorRegistry
+
 import scala.concurrent.ExecutionContextExecutor
 
 trait JsonMetrics {
@@ -26,11 +32,15 @@ trait MyHttp {
     }
   Http().bindAndHandle(route, "localhost", 8080)
 }
+
 object TheirApp extends App with MyHttp with JsonMetrics {
   val host = "127.0.0.1"
   val port = 8080
-  val registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-  Metrics.addRegistry(registry)
+  val graphite = new GraphiteMeterRegistry(GraphiteConfig.DEFAULT, Clock.SYSTEM,
+    new GraphiteHierarchicalNameMapper(GraphiteConfig.DEFAULT.prefix()), new MetricRegistry)
+  val prometheus = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT, new CollectorRegistry, Clock.SYSTEM)
+  Metrics.addRegistry(prometheus)
+  Metrics.addRegistry(graphite)
   val counter = Counter
     .builder("instance")
     .description("indicates instance count of the object")
@@ -46,5 +56,5 @@ object TheirApp extends App with MyHttp with JsonMetrics {
   counter.increment()
   counter1.increment()
 
-  override def jsonMetrics = registry.scrape()
+  override def jsonMetrics = prometheus.scrape()
 }

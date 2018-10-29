@@ -11,19 +11,21 @@ val micrometerVersion = "1.0.6"
 libraryDependencies ++= Seq(
 
   "org.json4s" %% "json4s-jackson" % "3.5.3",
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
 
   "io.dropwizard.metrics" % "metrics-core" % dropwizardVersion,
   "io.dropwizard.metrics" % "metrics-healthchecks" % dropwizardVersion,
   "io.dropwizard.metrics" % "metrics-graphite" % dropwizardVersion,
   "io.dropwizard.metrics" % "metrics-json" % dropwizardVersion,
 
-//  "io.prometheus" % "simpleclient" % prometheusClientVersion,
+  "io.prometheus" % "simpleclient" % prometheusClientVersion,
   "io.prometheus" % "simpleclient_httpserver" % prometheusClientVersion,
 
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
 
-  "io.micrometer" % "micrometer-registry-prometheus" % micrometerVersion
+  "io.micrometer" % "micrometer-registry-prometheus" % micrometerVersion,
+  "io.micrometer" % "micrometer-registry-graphite" % micrometerVersion
 
 )

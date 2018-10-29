@@ -89,7 +89,7 @@ object MyGauge extends App with MyGraphite {
   }
 }
 
-object MyCounter extends App with MyGraphite {
+object MyCounter extends App with MyGraphite with MyHttp {
   //A counter is just a gauge for an AtomicLong instance.
   val myCounter = metrics.counter("my-counter")
   while (true) {
@@ -98,13 +98,17 @@ object MyCounter extends App with MyGraphite {
   }
 }
 
-object MyHistogram extends App with MyGraphite {
+object MyHistogram extends App with MyGraphite with MyHttp {
   //A histogram measures the statistical distribution of values in a stream of data.
   val myHistogram = metrics.histogram("my-histogram")
+  val myTimer = metrics.timer("my-timer")
 
   while (true) {
     myHistogram.update(myHistogram.getCount + 1)
-    MILLISECONDS.sleep(100L)
+    val context = myTimer.time()
+    val howLong = util.Random.nextInt(10)
+    MILLISECONDS.sleep(howLong * 100L)
+    context.stop()
   }
 
 }
