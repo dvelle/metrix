@@ -1,0 +1,18 @@
+groups:
+  - name: example
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 10s
+        labels:
+          application: memter
+          environment: DEV
+          severity: minor
+      - alert: some_alert
+        expr: (sum(some_metric) > bool 1.0 or vector(1)) > 0
+        for: 5m
+        labels:
+          severity: minor
+        annotations:
+          description: Some desc
+          summary: Some Summary
